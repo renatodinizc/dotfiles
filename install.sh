@@ -44,4 +44,9 @@ else
   echo "  MCP: no .env file found, skipping MCP server setup (see .env.example)"
 fi
 
+echo ""
+echo "Recommended: add to your shell profile (~/.zshrc):"
+echo "  export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1"
+echo "  # Prevents API keys from leaking to Claude Code subprocesses"
+echo ""
 echo "Done."
