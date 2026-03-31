@@ -64,7 +64,7 @@ Before generating code or technical content:
 3. Check official documentation for APIs/libraries being used.
 4. Only then generate — and follow the patterns you found, not generic patterns from training data.
 
-Never generate from memory when a source of truth is available to read.
+Before answering any question about the current state of a file, codebase, or system, use a tool to check. Never answer from memory about mutable state.
 
 ---
 
