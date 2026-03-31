@@ -45,60 +45,73 @@ Do not just read the diff and opine. Use tools to verify.
 
 If any investigation reveals unknown territory, say so explicitly. Do not guess.
 
-## Phase 3: Standard Review
+## Phase 3: Parallel Review
 
-Work through these. Only flag **material** issues.
+After scoping and investigation, spawn three specialist subagents **in parallel** using the Agent tool. Pass each agent the diff, the change classification from Phase 1, and any findings from Phase 2.
 
-### Correctness
-- Does the code do what it claims?
-- Off-by-one errors, null/undefined access, race conditions?
-- Edge cases: empty inputs, boundary values, error states?
-- Unhappy path: network failures, invalid data, timeouts?
+Each agent should return a flat list of findings. Each finding: file and line, what the problem is (1 sentence), why it matters, severity (must-fix / should-fix / question).
 
-### Security
-- Injection vectors: SQL, XSS, command, path traversal?
-- Secrets hardcoded or logged?
-- User input validated at the boundary?
-- Authorization checks in place?
+### Agent 1: Security Reviewer
 
-### Performance
-- O(n^2) or worse where O(n) is possible?
-- N+1 queries or unbounded data fetching?
-- Missing indexes on queried columns?
-- Large allocations in hot paths?
+> You are reviewing a code change for security issues. Only flag material problems.
+>
+> Check for:
+> - Injection vectors: SQL, XSS, command injection, path traversal
+> - Secrets hardcoded or logged
+> - User input validated at the boundary
+> - Authorization checks in place
+> - For boundary changes: auth/authz on new or modified endpoints
+>
+> Do NOT flag style issues or theoretical concerns. Every finding must cite a specific line and a concrete attack vector or risk.
 
-## Phase 4: Staff-Engineer Questions
+### Agent 2: Performance Reviewer
 
-These are not bugs. They are the questions that might change the approach entirely. Only raise them when the change is non-trivial and the question is material.
+> You are reviewing a code change for performance issues. Only flag material problems.
+>
+> Check for:
+> - O(n^2) or worse where O(n) is possible
+> - N+1 queries or unbounded data fetching
+> - Missing indexes on queried columns
+> - Large allocations in hot paths
+> - For growing tables: at what scale do index changes degrade?
+> - Rate limits: can one caller saturate the system?
+>
+> Do NOT flag micro-optimizations. Every finding must cite a specific line and explain the scaling impact.
 
-**Failure modes:**
-- What happens if the downstream is slow (not down, slow)?
-- What happens if this operation is retried? Is it idempotent?
-- What happens if the process crashes halfway?
-- At 100x load, what breaks? Connection pools, queues, memory?
+### Agent 3: Correctness & Systems Reviewer
 
-**Cross-service concerns** (only for boundary/cross-cutting changes):
-- Is synchronous coupling necessary, or is it the default? Sync means: downstream slow = upstream slow.
-- Is a service becoming a cross-domain orchestrator?
-- Is this service coupling directly to another service's data model?
-- Where is the end-to-end SLA defined?
+> You are reviewing a code change for correctness and systems-level concerns. Only flag material problems.
+>
+> **Correctness:**
+> - Does the code do what it claims?
+> - Off-by-one errors, null/undefined access, race conditions?
+> - Edge cases: empty inputs, boundary values, error states?
+> - Unhappy path: network failures, invalid data, timeouts?
+>
+> **Failure modes** (non-trivial changes only):
+> - What happens if downstream is slow (not down, slow)?
+> - Is this operation idempotent if retried?
+> - What happens if the process crashes halfway?
+> - At 100x load, what breaks?
+>
+> **Rollout** (boundary/infrastructure changes only):
+> - Expand-Contract: all three phases present, or hard cutover?
+> - Can this be rolled back immediately?
+> - For schema migrations: what locks are acquired?
+>
+> **Observability:**
+> - Does this change emit metrics needed to know it's working?
+> - Are failure conditions alertable?
+>
+> **Cross-service** (boundary/cross-cutting changes only):
+> - Is synchronous coupling necessary or just the default?
+> - Is a service becoming a cross-domain orchestrator?
+>
+> Do NOT flag style issues. Every finding must cite a specific line or architectural concern with concrete impact.
 
-**Rollout** (only for boundary/infrastructure changes):
-- Expand-Contract: are all three phases present (expand, migrate, contract), or is this a hard cutover?
-- Can this be rolled back immediately if something breaks?
-- For schema migrations on live tables: what locks are acquired?
+All three agents have access to: Read, Grep, Glob, Bash. They should actively investigate (grep for consumers, read related files), not just opine on the diff.
 
-**Observability:**
-- Does this change emit the metrics needed to know it's working? Latency, throughput, error rates.
-- How does the author know this is healthy in production? If the answer is vague, flag it.
-- Are failure conditions alertable with specific thresholds?
-
-**Scaling:**
-- For index changes on growing tables: at what scale does this degrade?
-- If "strong consistency" is claimed: which specific guarantee per operation?
-- Are rate limits enforced? Can one caller saturate the system?
-
-## Phase 5: Verdict
+## Phase 4: Verdict
 
 Structure the output as:
 
@@ -109,7 +122,7 @@ Issues that will cause bugs, security vulnerabilities, data loss, or production 
 Issues that will cause problems over time: performance degradation, maintenance burden, observability gaps.
 
 ### Questions for the Author
-The staff-engineer questions from Phase 4 that surfaced material concerns. Framed as questions, not demands. These may change the approach, not just the implementation.
+Systems-level concerns from the subagents that surfaced material questions. Framed as questions, not demands. These may change the approach, not just the implementation.
 
 ### What's Done Well
 Brief (1-2 sentences). Genuine, not performative. Skip if nothing stands out.
