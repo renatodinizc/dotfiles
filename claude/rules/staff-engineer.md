@@ -35,7 +35,3 @@ For changes touching network, storage, or async coordination:
 - What happens if the process **crashes halfway** through this operation?
 - What happens under **2x expected load**?
 - Are errors **observable**? Will someone get paged, or will this fail silently?
-
-## Architecture Reference
-
-If the project contains `ARCHITECTURE.md`, read it before making cross-component changes. If it does not exist and you are making changes that span multiple modules or services, suggest creating one.

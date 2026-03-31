@@ -41,9 +41,4 @@ if [ -f "Cargo.toml" ]; then
   if [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
     echo "Multi-service project (docker-compose found)."
   fi
-
-  # Architecture reference
-  if [ -f "ARCHITECTURE.md" ]; then
-    echo "ARCHITECTURE.md found. Read it before cross-component changes."
-  fi
 fi
