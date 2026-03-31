@@ -1,75 +1,100 @@
 # dotaifiles
 
-Personal AI dotfiles. Traditional dotfiles configure your shell and editor. These configure how your AI reasons, verifies, and operates.
+Traditional dotfiles configure your shell. These configure how your AI thinks.
 
-## Why
+This is my [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) configuration. It replaces the default behavior (agreeable, verbose, conventional) with the behavior I actually want (critical, precise, opinionated). Every rule, skill, and hook exists because the default wasn't reliable enough for production work.
 
-AI assistants are capable but unreliable by default. They agree when they should challenge. They guess when they should verify. They default to conventional approaches when more powerful ones exist. They forget your standards between sessions.
+This is not a drop-in solution. It encodes how I work: backend systems, Rust, distributed architectures. Fork it and rewrite it for how you work. The value is in the approach, not the specifics.
 
-These dotfiles fix that. Not through vague instructions ("be careful", "be honest") but through specific protocols with defined triggers, confidence thresholds, and verification procedures.
+## The Problem
 
-## Core Protocols (Always Active)
+Out of the box, AI coding assistants have three failure modes that compound:
+
+1. **Sycophancy.** You say "I think we should use Redis here." The assistant says "Great idea! Here's how to set up Redis." It never asks whether you need Redis.
+2. **Fabrication without disclosure.** They guess and present guesses as facts. They cite functions that don't exist, describe APIs from training-data recall, and build on assumptions about code they haven't read.
+3. **Conventional defaults.** They reach for the most common approach, not the best one for the situation. The recommendations come from training-data frequency, not from analysis of your actual constraints.
+
+Telling an AI to "be careful" or "be honest" doesn't fix these. Specific protocols with defined triggers, confidence thresholds, and verification procedures do.
+
+## Architecture
+
+Four layers, each with different reliability characteristics:
+
+```
+┌─────────────────────────────────────────────┐
+│  Hooks        deterministic, 100% enforced  │  Shell scripts, regex matches
+├─────────────────────────────────────────────┤
+│  Rules        advisory, ~80% compliance     │  Always-on or context-triggered
+├─────────────────────────────────────────────┤
+│  Skills       auto-triggering workflows     │  Full procedures, loaded on demand
+├─────────────────────────────────────────────┤
+│  Agents       isolated subprocesses         │  Protected context, faster models
+└─────────────────────────────────────────────┘
+```
+
+The distinction between hooks and rules is deliberate. Advisory rules fail roughly 20% of the time. For formatting and security, that's not acceptable. Hooks regex-match `rm -rf /`, `git push --force main`, `DROP TABLE`, and fork bombs, then block execution before it happens. No LLM reasoning in the loop, no compliance gap.
+
+Skills auto-trigger based on context rather than requiring slash commands. A skill that activates invisibly when a YouTube URL appears is more powerful than one you have to remember to invoke, because it improves quality without requiring vigilance.
+
+## What's Inside
 
 ### Intellectual Honesty Protocol
 
-Governs how the AI *reasons*. Anti-sycophancy is the baseline, not a feature.
+Not "be honest" (that doesn't work). A multi-tier system with specific triggers and a noise filter:
 
-- No opening affirmations. User claims treated as hypotheses to evaluate, not facts to incorporate. Ground held under pressure.
-- Three-tier challenge system: silent internal checks on every response, labeled nudges (`[Consider]`, `[Challenge]`, `[Red Flag]`) when something material passes a 5-gate filter, and deep-dive protocols (pre-mortem, steelman, falsifiability audit) for irreversible decisions.
-- Calibrated uncertainty with explicit probability ranges ("likely" = 65-79%, "very likely" = 80-92%) paired with evidence quality ratings (high/medium/low). No vague hedging.
-- Emotional context detection. Validates before analyzing. Never pushes frameworks when you need to be heard.
+- **Tier 1 (silent):** Every response runs premise validation, consider-the-opposite, and bias scanning internally. The user sees nothing unless something material surfaces.
+- **Tier 2 (nudges):** A 5-gate materiality filter (would this change the decision? is it large enough to matter? is it directional? is it irreversible? have I already flagged too much this session?) prevents noise. Max 1 flag per response.
+- **Tier 3 (deep dive):** For irreversible decisions. Pre-mortem analysis, steelman of dismissed positions, falsifiability audits. Triggers on commitment language ("I've decided to...") or high-stakes domains.
+
+Calibrated uncertainty with defined probability ranges ("likely" = 65-79%, "very likely" = 80-92%) paired with evidence quality ratings (high/medium/low). No vague hedging.
 
 ### Operational Discipline
 
-Governs how the AI *verifies itself*. Procedural fact-checking, not good intentions.
+How the AI verifies itself. Every factual claim tagged by origin: `[VERIFIED]` (confirmed via tool), `[DOC]` (from provided documents), `[KNOWLEDGE]` (training data, flagged explicitly), `[INFERENCE]` (deduction, reasoning chain shown). Spec-driven workflow: read existing code before generating. Verbosity treated as hidden uncertainty, not thoroughness.
 
-- Source provenance tagging: every claim tagged as `[VERIFIED]`, `[DOC]`, `[KNOWLEDGE]`, or `[INFERENCE]`. Training-data claims flagged explicitly.
-- Spec-driven workflow: read existing code and docs before generating. Never generate from training-data patterns when a source of truth exists.
-- Verbosity detection: wordiness treated as a signal of hidden uncertainty, not thoroughness.
-- Context hygiene with three-tier fidelity (FULL/COMPRESSED/STUB) for what survives context compaction, plus post-compaction recovery checks.
+### Context-Triggered Rules
 
-## Domain Rules (Context-Triggered)
+Activate only when matching file types appear. No wasted tokens on irrelevant sessions.
 
-Activate only when working on matching file types. Narrow by design.
-
-**Feature Implementation** (all code files): Builder's perspective. TDD by default (red/green cycle, run tests on entry), blast radius scoping, failure mode thinking (slow downstream, retries, crashes, 2x and 100x load), observability checklist (metrics, dashboards, alerts, deployment validation), state ownership. Not "are errors logged?" but "how do I know this is working in production?"
-
-**Systems Thinking** (code + infrastructure files): Design perspective. Vector alignment across teams, migration discipline (10x threshold, hardest case first, expand-contract, stop the bleeding), capacity planning (optimize before scaling, peak not average, quality before decomposition), technical debt assessment (hotspot concentration, debt compounds at interfaces, incomplete migrations regress).
-
-**Rust Engineering** (`.rs`, `Cargo.toml`): Ownership patterns (prefer `&T` over cloning, `Cow<'_, str>` for maybe-allocating), error handling conventions (thiserror for libraries, anyhow for applications, never `unwrap()` in production), async discipline (tokio-specific, cancel-safe `select!`, never hold MutexGuard across `.await`), and a distributed systems checklist (timeout on every network call, exponential backoff + jitter, idempotency, graceful shutdown, circuit breakers).
-
-## Skills (Auto-Triggering Workflows)
-
-Only descriptions (~30 tokens each) load at startup. Full workflow loads on demand, keeping context lean.
-
-| Skill | Triggers when... | What it does |
+| Rule | Activates on | Core questions |
 |---|---|---|
-| **deep-dive** | Asked to research a topic | Parallel multi-source search, triangulation, structured synthesis |
-| **steelman** | Taking a strong position or dismissing an alternative | Builds the strongest case for the opposing view (Ideological Turing Test) |
-| **code-review** | Reviewing a PR or changes | Scopes review by change type, actively investigates (traces consumers, reads schemas), standard checks, staff-engineer questions, structured verdict |
-| **pre-mortem** | High-stakes decision | Gary Klein failure analysis: imagine it failed, work backward |
-| **fetch-web** | A URL needs reading | Playwright MCP (full JS) with fallback chain: shot-scraper, lynx, curl |
-| **fetch-youtube** | YouTube link appears | Transcript + metadata extraction via yt-dlp |
-| **fetch-social** | Instagram/Pinterest URL | Dedicated CLI tools that bypass authentication walls |
+| Feature Implementation | All code files | TDD workflow. Who consumes this? What happens at 2x load? At 100x? How do I know this is working in production (not "are errors logged?")? |
+| Systems Thinking | Code + infrastructure | Does this push teams' technical directions toward or away from each other? Is an 80% migration worth 0% (new code adopts the old pattern)? Optimize before scaling. |
+| Rust Engineering | `.rs`, `Cargo.toml` | Prefer `&T` over cloning. Never `unwrap()` in production. Never hold MutexGuard across `.await`. Timeout on every network call. |
 
-Skills that auto-trigger are more powerful than slash commands you have to remember. They improve quality invisibly.
+Each rule encodes specific engineering judgment, not generic best practices. Generic advice is already in the training data. Rules that say "be careful with error handling" add nothing. Rules that say "use thiserror for libraries, anyhow for applications, map errors at module boundaries" change behavior.
 
-## Hooks (Deterministic Guardrails)
+### Skills
 
-Rules are advisory (~80% compliance). Hooks execute 100% of the time.
+Only descriptions (~30 tokens each) load at startup. Full workflow loads on demand.
 
-- **SessionStart**: Detects project type from Cargo.toml, scans dependencies (tokio, kafka, axum, gRPC, SQL, Redis, etc.), flags multi-service projects. Injects relevant context before you start working.
-- **Dangerous command blocker**: Regex-matches and blocks `rm -rf /`, `git push --force main`, `git reset --hard`, `DROP TABLE`, and fork bombs before execution.
-- **Auto-formatting**: Runs rustfmt on `.rs` files and prettier on `.ts/.js/.json/.css` after every file write. Formatting is a hook, not a conversation.
-- **File protection**: Denies reads on `.env`, secrets, and credential files. Prevents accidental leakage.
-- **Notifications**: macOS alerts when tasks complete or need attention.
+| Skill | What it does |
+|---|---|
+| `deep-dive` | Parallel multi-source research with source triangulation, credibility ratings, 2+ independent sources required for major claims |
+| `code-review` | 5-phase review: scope the change type, investigate (trace consumers, read schemas), standard checks, staff-engineer questions ("what breaks at 100x?"), structured verdict |
+| `steelman` | Builds the strongest case for the opposing position. Quality bar: passes the Ideological Turing Test |
+| `pre-mortem` | Gary Klein failure analysis. Imagine it failed, work backward. Classify each failure as addressable, watchable, acceptable, or noise |
+| `fetch-web` | Full JS rendering via Playwright MCP, with fallback chain (shot-scraper, lynx, curl) |
+| `fetch-youtube` | Transcript and metadata extraction via yt-dlp |
+| `fetch-social` | Instagram (instaloader) and Pinterest (gallery-dl) via dedicated CLI tools |
 
-## Agents (Subprocesses)
+### Hooks
 
-Specialized subprocesses for tasks that would bloat the main context window. Both run on faster models to keep costs down.
+| Event | What it does |
+|---|---|
+| Session start | Detects Rust project, scans Cargo.toml for key dependencies (tokio, kafka, axum, gRPC, SQL, Redis...), flags multi-service projects |
+| Before shell command | Regex-blocks destructive commands: `rm -rf /`, force push to main, `git reset --hard`, `DROP TABLE`, fork bombs |
+| After file write | Auto-formats: rustfmt for `.rs`, prettier for `.ts/.js/.json/.css` |
+| On completion | macOS notification with sound |
 
-- **Researcher**: Deep investigation with source attribution, credibility-rated sources, 2+ independent sources required for major claims.
-- **Debugger**: Root cause analysis. Read error, reproduce, trace, hypothesize, test, fix, verify. Never guesses, never applies multiple changes at once.
+File protection (`.env`, secrets, credentials) is enforced through permission denials, not hooks.
+
+### Agents
+
+Specialized subprocesses for tasks that would bloat the main context window. Both run on faster models.
+
+- **Researcher:** Deep investigation with source attribution. 2+ independent sources for major claims. Credibility-rated sources. Says "I could not find reliable information" when that's the case.
+- **Debugger:** Root cause analysis. Read the error, reproduce, trace, hypothesize, test, fix, verify. Never guesses. Never applies multiple changes at once.
 
 ## Setup
 
@@ -82,13 +107,24 @@ bash install.sh
 
 Symlinks everything into `~/.claude/` and registers MCP servers. Run again after pulling updates.
 
-### Dependencies
-
 ```bash
-brew install yt-dlp jq
+brew install yt-dlp jq    # Required for YouTube and JSON processing
 ```
 
 Node.js 18+ required for Playwright MCP.
+
+## Making It Yours
+
+The point of this repository is not for you to use my configuration. It's to show that **AI behavior is configurable at a level most people don't realize**, and to give you a starting point for building your own.
+
+If you work in Python data science, my Rust ownership rules and distributed systems checklists are irrelevant. But the architecture (layered enforcement, auto-triggering skills, calibrated honesty, isolated agents) adapts to any domain.
+
+To build your own:
+
+1. **Start from your frustrations.** What does your AI get wrong repeatedly? Those are your first rules. Specific failures produce specific rules.
+2. **Separate enforcement tiers.** Critical invariants (don't delete production, don't commit secrets) go in hooks. Reasoning guidance goes in rules. Multi-step workflows go in skills.
+3. **Be specific, not aspirational.** "Be careful with errors" adds nothing. "Use thiserror for libraries, anyhow for applications, map errors at module boundaries" changes behavior. The gap between a useful rule and a useless one is specificity.
+4. **Make it personal.** The rules that work are the ones that encode your actual engineering judgment, not best practices you read about. Generic advice is already in the training data, and that's exactly what you're trying to override.
 
 ## Structure
 
@@ -99,28 +135,20 @@ claude/
 ├── agents/
 │   ├── researcher.md                # Deep research with source attribution
 │   └── debugger.md                  # Root cause analysis, never guesses
-├── rules/                           # Always-on and context-triggered protocols
+├── rules/
 │   ├── intellectual-honesty.md      # Anti-sycophancy, calibrated reasoning
-│   ├── operational-discipline.md    # Source tagging, context hygiene, verification
+│   ├── operational-discipline.md    # Source tagging, verification, context hygiene
 │   ├── feature-implementation.md    # TDD, blast radius, failure modes, observability
-│   ├── systems-thinking.md         # Migrations, capacity, debt, architecture
+│   ├── systems-thinking.md          # Migrations, capacity, debt, architecture
 │   └── rust-engineering.md          # Ownership, async, errors, distributed systems
 ├── scripts/
-│   └── detect-project.sh            # SessionStart: project type + dependency detection
-└── skills/                          # Auto-triggering workflows
-    ├── deep-dive/SKILL.md
-    ├── steelman/SKILL.md
-    ├── code-review/SKILL.md
-    ├── pre-mortem/SKILL.md
-    ├── fetch-web/SKILL.md
-    ├── fetch-youtube/SKILL.md
-    └── fetch-social/SKILL.md
+│   └── detect-project.sh            # SessionStart project detection
+└── skills/
+    ├── deep-dive/SKILL.md           # Multi-source research
+    ├── code-review/SKILL.md         # 5-phase systematic review
+    ├── steelman/SKILL.md            # Strongest opposing argument
+    ├── pre-mortem/SKILL.md          # Gary Klein failure analysis
+    ├── fetch-web/SKILL.md           # JS-rendered web fetching
+    ├── fetch-youtube/SKILL.md       # YouTube transcript extraction
+    └── fetch-social/SKILL.md       # Instagram/Pinterest fetching
 ```
-
-## Philosophy
-
-The best dotfiles encode how you think, not just what tools you use. A `.gitconfig` that sets `rebase.autosquash=true` says something about how you approach version control. An AI rule that says "treat user claims as hypotheses" says something about how you approach truth.
-
-These dotfiles encode a specific stance: AI should be a thinking partner that makes you more rigorous, not a yes-man that makes you feel productive. Every rule, skill, and hook exists because the default behavior was not reliable enough.
-
-This is a personal configuration. It reflects how I work: backend systems, Rust, distributed architectures. Fork it and make it yours.
