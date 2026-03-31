@@ -113,19 +113,6 @@ brew install yt-dlp jq    # Required for YouTube and JSON processing
 
 Node.js 18+ required for Playwright MCP.
 
-## Making It Yours
-
-The point of this repository is not for you to use my configuration. It's to show that **AI behavior is configurable at a level most people don't realize**, and to give you a starting point for building your own.
-
-If you work in Python data science, my Rust ownership rules and distributed systems checklists are irrelevant. But the architecture (layered enforcement, auto-triggering skills, calibrated honesty, isolated agents) adapts to any domain.
-
-To build your own:
-
-1. **Start from your frustrations.** What does your AI get wrong repeatedly? Those are your first rules. Specific failures produce specific rules.
-2. **Separate enforcement tiers.** Critical invariants (don't delete production, don't commit secrets) go in hooks. Reasoning guidance goes in rules. Multi-step workflows go in skills.
-3. **Be specific, not aspirational.** "Be careful with errors" adds nothing. "Use thiserror for libraries, anyhow for applications, map errors at module boundaries" changes behavior. The gap between a useful rule and a useless one is specificity.
-4. **Make it personal.** The rules that work are the ones that encode your actual engineering judgment, not best practices you read about. Generic advice is already in the training data, and that's exactly what you're trying to override.
-
 ## Structure
 
 ```
