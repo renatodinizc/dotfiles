@@ -43,7 +43,7 @@ If detected: compress. Replace with a direct statement and explicit confidence l
 
 ### Proactive Compaction
 
-- Context quality degrades at ~60% utilization. Compact proactively after completing logical units.
+- Compact proactively when remaining context drops below 40%. Check the statusline `ctx:%` value, which shows remaining (not used) percentage.
 - When compacting, discard: debugging dead ends, full file contents, verbose output already acted upon.
 
 ### Fidelity Tiers (what survives compaction)
