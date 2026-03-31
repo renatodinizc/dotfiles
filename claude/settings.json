@@ -6,7 +6,8 @@
       "Read(./.env.*)",
       "Read(./secrets/**)",
       "Read(./**/credentials*)"
-    ]
+    ],
+    "disableBypassPermissionsMode": "disable"
   },
   "mcpServers": {
     "playwright": {
@@ -15,6 +16,13 @@
         "@playwright/mcp@latest",
         "--user-data-dir",
         "/Users/renato/.playwright-profile"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
       ]
     }
   },
@@ -27,6 +35,18 @@
             "type": "command",
             "command": "bash -c 'INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r \".tool_input.command\"); if echo \"$CMD\" | grep -qE \"rm\\s+-rf\\s+/|git\\s+push\\s+(-f|--force)\\s+(origin\\s+)?main|git\\s+reset\\s+--hard|DROP\\s+TABLE|:(){ :|:& };:\"; then echo \"BLOCKED: Dangerous command detected: $CMD\" >&2; exit 2; fi'",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'FILE=$(cat | jq -r \".tool_input.file_path // empty\"); if [ -n \"$FILE\" ] && [ -f \"$FILE\" ]; then case \"$FILE\" in *.rs) rustfmt \"$FILE\" 2>/dev/null ;; *.ts|*.tsx|*.js|*.jsx|*.json|*.css|*.scss) npx prettier --write \"$FILE\" 2>/dev/null ;; esac; fi'",
+            "timeout": 15
           }
         ]
       }
