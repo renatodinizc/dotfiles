@@ -33,5 +33,13 @@ For changes touching network, storage, or async coordination:
 - What happens if the downstream service is **slow** (not down, slow)?
 - What happens if this operation is **retried**? Is it idempotent?
 - What happens if the process **crashes halfway** through this operation?
-- What happens under **2x expected load**?
-- Are errors **observable**? Will someone get paged, or will this fail silently?
+- What happens under **2x expected load**? What **breaks entirely at 100x** (hundreds of requests/sec)? Think connection pool exhaustion, queue backpressure, cascading timeouts, memory pressure from unbounded buffers.
+
+## Observability Checklist
+
+Not "are errors logged?" but "how do I know this feature is working correctly in production?"
+
+- **Metrics**: Does this change emit the metrics needed to understand its behavior? Latency (p50/p95/p99), throughput, error rates, queue depths, resource utilization.
+- **Dashboards**: Can someone unfamiliar with this code look at a Grafana dashboard and tell whether this feature is healthy? If no dashboard exists, flag it.
+- **Alerts**: What conditions should page someone? Define thresholds, not just "alert on errors." Error rate > X% over Y minutes, latency p99 > Z ms, queue depth growing unboundedly.
+- **Deployment validation**: After deploying this change, what do you check to confirm it's working? Be specific. "Check the logs" is not a plan.

@@ -32,7 +32,9 @@ Governs how the AI *verifies itself*. Procedural fact-checking, not good intenti
 
 Activate only when working on matching file types. Narrow by design.
 
-**Staff Engineer Protocol** (Rust, Dockerfile, Protobuf): Pre-change blast radius scoping, data flow tracing (origin to final consumer, failure mode at each hop), and a failure checklist. What happens if the downstream is slow (not down, slow)? What if this operation is retried? What if the process crashes halfway? What happens under 2x expected load?
+**Staff Engineer Protocol** (Rust, Dockerfile, Protobuf): Pre-change blast radius scoping, data flow tracing (origin to final consumer, failure mode at each hop), failure checklist (slow downstream, retries, crashes, 2x and 100x load), and an observability checklist (metrics, dashboards, alerts, deployment validation). Not "are errors logged?" but "how do I know this feature is working correctly in production?"
+
+**Test-First Workflow** (all code files): Red/green TDD as the default. Run existing tests first when entering a codebase. Write a failing test before implementing. Convert manual testing discoveries into automated tests. Match existing test style.
 
 **Rust Engineering** (`.rs`, `Cargo.toml`): Ownership patterns (prefer `&T` over cloning, `Cow<'_, str>` for maybe-allocating), error handling conventions (thiserror for libraries, anyhow for applications, never `unwrap()` in production), async discipline (tokio-specific, cancel-safe `select!`, never hold MutexGuard across `.await`), and a distributed systems checklist (timeout on every network call, exponential backoff + jitter, idempotency, graceful shutdown, circuit breakers).
 
@@ -100,7 +102,8 @@ claude/
 ├── rules/                           # Always-on and context-triggered protocols
 │   ├── intellectual-honesty.md      # Anti-sycophancy, calibrated reasoning
 │   ├── operational-discipline.md    # Source tagging, context hygiene, verification
-│   ├── staff-engineer.md            # Blast radius, data flow, failure modes
+│   ├── staff-engineer.md            # Blast radius, data flow, failure modes, observability
+│   ├── test-first.md                # TDD as default, red/green cycle, test harness discovery
 │   └── rust-engineering.md          # Ownership, async, errors, distributed systems
 ├── scripts/
 │   └── detect-project.sh            # SessionStart: project type + dependency detection
