@@ -25,6 +25,12 @@ for file in $(find "$DOTFILES_DIR/claude" -type f 2>/dev/null); do
   link "$file" "$HOME/.claude/$relative"
 done
 
+# Clean up dead symlinks (from deleted source files)
+find "$HOME/.claude" -type l ! -exec test -e {} \; -print 2>/dev/null | while read -r dead; do
+  rm "$dead"
+  echo "  Removed stale symlink: $dead"
+done
+
 # MCP servers (requires API keys in .env)
 if [ -f "$DOTFILES_DIR/.env" ]; then
   source "$DOTFILES_DIR/.env"
