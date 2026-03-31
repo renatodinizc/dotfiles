@@ -22,6 +22,10 @@
       "args": ["-y", "@upstash/context7-mcp@latest"]
     }
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/scripts/statusline-command.sh"
+  },
   "hooks": {
     "SessionStart": [
       {
