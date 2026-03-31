@@ -34,8 +34,6 @@ Activate only when working on matching file types. Narrow by design.
 
 **Feature Implementation** (all code files): Builder's perspective. TDD by default (red/green cycle, run tests on entry), blast radius scoping, failure mode thinking (slow downstream, retries, crashes, 2x and 100x load), observability checklist (metrics, dashboards, alerts, deployment validation), state ownership. Not "are errors logged?" but "how do I know this is working in production?"
 
-**Code Review** (all code files): Reviewer's perspective. Data flow tracing (origin to consumer, failure at each hop), cross-service concerns (temporal coupling, orchestrator creep, model coupling, SLA ownership), backwards compatibility (expand-contract, coexistence, reversibility), failure modes, scaling awareness (index impact, consistency precision, rate limits).
-
 **Systems Thinking** (code + infrastructure files): Design perspective. Vector alignment across teams, migration discipline (10x threshold, hardest case first, expand-contract, stop the bleeding), capacity planning (optimize before scaling, peak not average, quality before decomposition), technical debt assessment (hotspot concentration, debt compounds at interfaces, incomplete migrations regress).
 
 **Rust Engineering** (`.rs`, `Cargo.toml`): Ownership patterns (prefer `&T` over cloning, `Cow<'_, str>` for maybe-allocating), error handling conventions (thiserror for libraries, anyhow for applications, never `unwrap()` in production), async discipline (tokio-specific, cancel-safe `select!`, never hold MutexGuard across `.await`), and a distributed systems checklist (timeout on every network call, exponential backoff + jitter, idempotency, graceful shutdown, circuit breakers).
@@ -48,7 +46,7 @@ Only descriptions (~30 tokens each) load at startup. Full workflow loads on dema
 |---|---|---|
 | **deep-dive** | Asked to research a topic | Parallel multi-source search, triangulation, structured synthesis |
 | **steelman** | Taking a strong position or dismissing an alternative | Builds the strongest case for the opposing view (Ideological Turing Test) |
-| **code-review** | Reviewing a PR or changes | Systematic: correctness, security, performance, design. No style nitpicks. |
+| **code-review** | Reviewing a PR or changes | Scopes review by change type, actively investigates (traces consumers, reads schemas), standard checks, staff-engineer questions, structured verdict |
 | **pre-mortem** | High-stakes decision | Gary Klein failure analysis: imagine it failed, work backward |
 | **fetch-web** | A URL needs reading | Playwright MCP (full JS) with fallback chain: shot-scraper, lynx, curl |
 | **fetch-youtube** | YouTube link appears | Transcript + metadata extraction via yt-dlp |
@@ -105,7 +103,6 @@ claude/
 │   ├── intellectual-honesty.md      # Anti-sycophancy, calibrated reasoning
 │   ├── operational-discipline.md    # Source tagging, context hygiene, verification
 │   ├── feature-implementation.md    # TDD, blast radius, failure modes, observability
-│   ├── code-review.md              # Data flow, cross-service, compatibility, scaling
 │   ├── systems-thinking.md         # Migrations, capacity, debt, architecture
 │   └── rust-engineering.md          # Ownership, async, errors, distributed systems
 ├── scripts/
