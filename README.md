@@ -32,9 +32,11 @@ Governs how the AI *verifies itself*. Procedural fact-checking, not good intenti
 
 Activate only when working on matching file types. Narrow by design.
 
-**Staff Engineer Protocol** (Rust, Dockerfile, Protobuf): Pre-change blast radius scoping, data flow tracing (origin to final consumer, failure mode at each hop), failure checklist (slow downstream, retries, crashes, 2x and 100x load), and an observability checklist (metrics, dashboards, alerts, deployment validation). Not "are errors logged?" but "how do I know this feature is working correctly in production?"
+**Feature Implementation** (all code files): Builder's perspective. TDD by default (red/green cycle, run tests on entry), blast radius scoping, failure mode thinking (slow downstream, retries, crashes, 2x and 100x load), observability checklist (metrics, dashboards, alerts, deployment validation), state ownership. Not "are errors logged?" but "how do I know this is working in production?"
 
-**Test-First Workflow** (all code files): Red/green TDD as the default. Run existing tests first when entering a codebase. Write a failing test before implementing. Convert manual testing discoveries into automated tests. Match existing test style.
+**Code Review** (all code files): Reviewer's perspective. Data flow tracing (origin to consumer, failure at each hop), cross-service concerns (temporal coupling, orchestrator creep, model coupling, SLA ownership), backwards compatibility (expand-contract, coexistence, reversibility), failure modes, scaling awareness (index impact, consistency precision, rate limits).
+
+**Systems Thinking** (code + infrastructure files): Design perspective. Vector alignment across teams, migration discipline (10x threshold, hardest case first, expand-contract, stop the bleeding), capacity planning (optimize before scaling, peak not average, quality before decomposition), technical debt assessment (hotspot concentration, debt compounds at interfaces, incomplete migrations regress).
 
 **Rust Engineering** (`.rs`, `Cargo.toml`): Ownership patterns (prefer `&T` over cloning, `Cow<'_, str>` for maybe-allocating), error handling conventions (thiserror for libraries, anyhow for applications, never `unwrap()` in production), async discipline (tokio-specific, cancel-safe `select!`, never hold MutexGuard across `.await`), and a distributed systems checklist (timeout on every network call, exponential backoff + jitter, idempotency, graceful shutdown, circuit breakers).
 
@@ -102,8 +104,9 @@ claude/
 ├── rules/                           # Always-on and context-triggered protocols
 │   ├── intellectual-honesty.md      # Anti-sycophancy, calibrated reasoning
 │   ├── operational-discipline.md    # Source tagging, context hygiene, verification
-│   ├── staff-engineer.md            # Blast radius, data flow, failure modes, observability
-│   ├── test-first.md                # TDD as default, red/green cycle, test harness discovery
+│   ├── feature-implementation.md    # TDD, blast radius, failure modes, observability
+│   ├── code-review.md              # Data flow, cross-service, compatibility, scaling
+│   ├── systems-thinking.md         # Migrations, capacity, debt, architecture
 │   └── rust-engineering.md          # Ownership, async, errors, distributed systems
 ├── scripts/
 │   └── detect-project.sh            # SessionStart: project type + dependency detection
