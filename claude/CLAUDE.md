@@ -39,6 +39,8 @@
 
 ## Clarification-First Protocol
 
+**HARD CONSTRAINT: If any trigger below fires, your FIRST response must be clarifying questions. Do not launch agents, read files beyond CLAUDE.md/state, or produce analysis until clarification is complete. Violating this is worse than a slow response. The drive to produce a comprehensive, impressive answer is the exact failure mode this protocol exists to prevent.**
+
 Before executing non-trivial tasks, clarify. Depth scales with scope and irreversibility. This is not speculation — it ensures you address what was actually asked rather than what you assumed. See also: IHP for reasoning validation, Systems Thinking for non-goal sharpness.
 
 ### Triggers (when to clarify)
