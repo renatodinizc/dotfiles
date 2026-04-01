@@ -31,6 +31,25 @@ find "$HOME/.claude" -type l ! -exec test -e {} \; -print 2>/dev/null | while re
   echo "  Removed stale symlink: $dead"
 done
 
+# Git
+link "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig"
+
+# Neovim
+link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+
+# VS Code
+link "$DOTFILES_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+
+# GitHub CLI
+link "$DOTFILES_DIR/gh/config.yml" "$HOME/.config/gh/config.yml"
+
+# macOS keyboard repeat rate (fastest settings, requires logout to take effect)
+if [ "$(uname)" = "Darwin" ]; then
+  defaults write NSGlobalDomain KeyRepeat -int 2
+  defaults write NSGlobalDomain InitialKeyRepeat -int 15
+  echo "  macOS: keyboard repeat rate set (logout to apply)"
+fi
+
 # iTerm2 color scheme
 ITERM2_THEME="$DOTFILES_DIR/iterm2/Night-Owl.itermcolors"
 ITERM2_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"

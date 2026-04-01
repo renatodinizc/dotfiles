@@ -1,0 +1,57 @@
+{
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.tabSize": 4,
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "Night Owl",
+  "editor.rulers": [
+    {
+      "column": 80
+    }
+  ],
+  "editor.renderWhitespace": "trailing",
+  "workbench.startupEditor": "none",
+  "git.confirmSync": false,
+  "ruby.intellisense": "rubyLocate",
+  "ruby.lint": {},
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "cSpell.userWords": [
+    "acesvehicle",
+    "acesvehicleconfigid",
+    "acesvehiclemapping",
+    "acesvehiclemappingid",
+    "actix",
+    "avmake",
+    "avmodel",
+    "avsubmodel",
+    "behaviours",
+    "buildinfo",
+    "cvam",
+    "dotenv",
+    "optioncodes",
+    "reqwest",
+    "Smartcar",
+    "sqlx",
+    "styleid",
+    "submodel",
+    "vehicleid",
+    "vehiclemappingid"
+  ],
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "window.zoomLevel": 1,
+  "editor.cursorSurroundingLines": 8,
+  "redhat.telemetry.enabled": true,
+  "cSpell.enabled": false,
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp",
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.rulers": [120],
+    "editor.semanticHighlighting.enabled": true
+  }
+}

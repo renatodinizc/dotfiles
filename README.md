@@ -105,7 +105,7 @@ cp .env.example .env  # Add your API keys
 bash install.sh
 ```
 
-Symlinks everything into `~/.claude/`, installs the iTerm2 color scheme, and registers MCP servers. Run again after pulling updates.
+Symlinks configs, installs the iTerm2 color scheme, sets macOS keyboard repeat rate, and registers MCP servers. Run again after pulling updates.
 
 ```bash
 brew install yt-dlp jq    # Required for YouTube and JSON processing
@@ -116,6 +116,16 @@ Node.js 18+ required for Playwright MCP.
 ## Structure
 
 ```
+git/
+└── gitconfig                       # Git identity, editor, LFS, credential helper
+gh/
+└── config.yml                      # GitHub CLI protocol, aliases, preferences
+nvim/
+├── init.lua                        # Kickstart.nvim-based config (LSP, Telescope, Treesitter)
+├── .stylua.toml                    # Lua formatter settings
+└── lua/                            # Plugin configs (kickstart + custom)
+vscode/
+└── settings.json                   # Theme, rulers, Ruby LSP, formatting
 iterm2/
 └── Night-Owl.itermcolors           # Color scheme (auto-applied to Default profile)
 claude/

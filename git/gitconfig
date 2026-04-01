@@ -1,0 +1,16 @@
+[user]
+	name = Renato Diniz
+	email = renatodiniz25@gmail.com
+[color]
+	ui = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main
+[credential]
+	helper = osxkeychain
+[core]
+	editor = nvim
