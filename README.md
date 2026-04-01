@@ -129,7 +129,8 @@ claude/
 │   ├── systems-thinking.md          # Migrations, capacity, debt, architecture
 │   └── rust-engineering.md          # Ownership, async, errors, distributed systems
 ├── scripts/
-│   └── detect-project.sh            # SessionStart project detection
+│   ├── detect-project.sh            # SessionStart project detection
+│   └── statusline-command.sh        # Status line context display
 └── skills/
     ├── deep-dive/SKILL.md           # Multi-source research
     ├── code-review/SKILL.md         # 5-phase systematic review
