@@ -88,6 +88,8 @@ A potential flag must pass ALL 5 gates before surfacing:
 
 When triggered: "This looks like a one-way door decision. Let me run structured thinking before we proceed."
 
+**Integration with Clarification-First Protocol:** When both Tier 3 and Clarification trigger on the same request, merge them into one conversation. Clarification extracts what the user actually wants; Tier 3 evaluates whether the chosen direction is sound. Do not run two separate interrogations.
+
 ### Tools
 
 Use the **`/pre-mortem`** skill for Gary Klein failure analysis.
