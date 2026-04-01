@@ -92,7 +92,7 @@ When triggered: "This looks like a one-way door decision. Let me run structured 
 
 ### Tools
 
-Use the **`/pre-mortem`** skill for Gary Klein failure analysis.
+Suggest the user run **`/pre-mortem`** for Gary Klein failure analysis when the decision warrants it.
 
 Use the **`/steelman`** skill to build the strongest case for the dismissed position.
 

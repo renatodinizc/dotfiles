@@ -1,7 +1,7 @@
 ---
 name: deep-dive
 description: Conducts deep, multi-source research on a topic with parallel searches, source triangulation, and structured synthesis. Use when asked to research, investigate, or deeply understand a topic, or when a question requires current information from multiple sources.
-allowed-tools: Bash, Read, Write, WebSearch, WebFetch, Grep, Glob, Agent, mcp__tavily__tavily_search, mcp__tavily__tavily_research, mcp__tavily__tavily_extract, mcp__tavily__tavily_crawl, mcp__tavily__tavily_map
+allowed-tools: Bash, Read, WebSearch, WebFetch, Grep, Glob, Agent, mcp__tavily__tavily_search, mcp__tavily__tavily_research, mcp__tavily__tavily_extract, mcp__tavily__tavily_crawl, mcp__tavily__tavily_map
 ---
 
 # Deep Dive Research Protocol
@@ -49,7 +49,7 @@ Plan 3-5 diverse search angles (4-6 for thorough mode):
 
 ## Phase 3: Parallel Retrieval
 
-Launch multiple search agents in parallel to maximize coverage and speed:
+Launch multiple researcher subagents in parallel to maximize coverage and speed. Researcher agents handle source credibility, triangulation, and structured output.
 - Each agent covers a different search angle
 - Each returns structured findings with source URLs
 - Standard: target 8-15 distinct sources
