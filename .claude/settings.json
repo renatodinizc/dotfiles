@@ -1,0 +1,19 @@
+{
+  "effortLevel": "high",
+  "permissions": {
+    "allow": [
+      "Bash(git reset:*)",
+      "Bash(git update-ref:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git reflog:*)",
+      "Bash(git gc:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "mcp__tavily__tavily_search",
+      "WebSearch"
+    ]
+  }
+}
