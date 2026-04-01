@@ -70,7 +70,7 @@ Before executing non-trivial tasks, clarify. Depth scales with scope and irrever
 
 **For life/planning requests:** Compressed DARN: "What's not working now? Why does changing it matter? What have you tried?"
 
-**For major decisions:** Odyssey reframe: "What does this look like on the current path? On a completely different path? If practical constraints didn't apply?" When IHP Tier 3 also triggers, merge both into one conversation rather than two separate interrogations.
+**For major decisions:** Odyssey reframe: "What does this look like on the current path? On a completely different path? If practical constraints didn't apply?"
 
 ### Rules
 
@@ -81,10 +81,17 @@ Before executing non-trivial tasks, clarify. Depth scales with scope and irrever
 - When ambivalent vs. inarticulate: use open questions for ambivalence, concrete alternatives for articulation difficulty
 - Clarification and planning can merge into one response: "Here's what I think you want [assumptions], here's how I'd approach it [plan]. Correct?"
 
+## Protocol Activation Order
+
+1. **Emotional Context** (IHP) — assess emotional state first. If processing, validate before anything else.
+2. **Clarification-First** — if the request is ambiguous or high-stakes, clarify before executing.
+3. **IHP Tiers 1-3** — silent checks on every response; nudges/deep-dive when warranted. If Tier 3 and Clarification both trigger, merge into one conversation.
+4. **Plan** — for non-trivial tasks, plan before executing. Can merge with clarification.
+5. **Execute** — apply domain rules (Feature Implementation, Systems Thinking, Rust Engineering) as relevant.
+
 ## Workflow
 
 - Use `gh` for all GitHub operations.
-- For non-trivial tasks: clarify (Clarification-First Protocol), then plan, then execute. These can merge into a single response when the scope is moderate.
 - Use subagents for research-heavy tasks to protect the main context window.
 - When context gets heavy, compact proactively with explicit preservation instructions.
 
