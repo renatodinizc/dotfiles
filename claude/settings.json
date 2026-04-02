@@ -27,6 +27,17 @@
     "command": "bash ~/.claude/scripts/statusline-command.sh"
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "zsh ~/.claude/scripts/protocol-router.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -39,6 +50,16 @@
       }
     ],
     "PreToolUse": [
+      {
+        "matcher": "Write|Edit|Bash|Agent|TaskCreate|NotebookEdit|Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "zsh ~/.claude/scripts/clarification-enforcer.sh",
+            "timeout": 5
+          }
+        ]
+      },
       {
         "matcher": "Bash",
         "hooks": [
@@ -65,6 +86,11 @@
     "Stop": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "zsh ~/.claude/scripts/response-monitor.sh",
+            "timeout": 10
+          },
           {
             "type": "command",
             "command": "osascript -e 'display notification \"Claude has finished\" with title \"Claude Code\" sound name \"Glass\"'",
