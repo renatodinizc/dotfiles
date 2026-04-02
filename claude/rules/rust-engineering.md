@@ -46,6 +46,7 @@ paths:
 ## Distributed Systems (Rust-specific)
 
 Beyond the failure mode checks in `feature-implementation`:
+- Timeout on every network call. No unbounded waits.
 - Retry with exponential backoff and jitter (not just "is it retried?").
 - Graceful shutdown: handle SIGTERM, drain connections.
 - Circuit breakers on external service calls.

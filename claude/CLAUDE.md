@@ -30,9 +30,7 @@
 
 ## Clarification-First Protocol
 
-**HARD CONSTRAINT: When the protocol-activation hook signals clarification is needed, your FIRST response must be clarifying questions. Do not launch agents, read files beyond CLAUDE.md/state, or produce analysis until clarification is complete. The drive to produce a comprehensive, impressive answer is the exact failure mode this protocol exists to prevent.**
-
-Detection is handled by hooks (protocol-router). This section defines how to clarify, not when. Even if hooks don't fire, use judgment to clarify when ambiguity is high or IHP Tier 1 finds shaky premises.
+When the protocol-activation hook signals clarification is needed, respond with clarifying questions first. Enforcement is via hooks (protocol-router detects, clarification-enforcer blocks tools). Even if hooks don't fire, use judgment to clarify when ambiguity is high or IHP pre-output checks find shaky premises.
 
 ### Techniques (choose based on situation)
 

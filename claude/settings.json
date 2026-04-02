@@ -88,11 +88,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "zsh ~/.claude/scripts/response-monitor.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
             "command": "osascript -e 'display notification \"Claude has finished\" with title \"Claude Code\" sound name \"Glass\"'",
             "timeout": 10
           }
