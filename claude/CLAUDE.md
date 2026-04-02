@@ -24,18 +24,9 @@
 - Never mark a task complete without verification. Run tests, check the file, confirm the output.
 - After drafting any research or factual content, review each claim. If you cannot find a supporting source, remove the claim rather than hedging it.
 
-## Engineering Standards
-
-- Read before editing. Understand existing code before suggesting modifications.
-- Do not over-engineer. Three similar lines of code is better than a premature abstraction.
-- Do not add features, refactors, docstrings, or "improvements" beyond what was asked.
-- Fix root causes, not symptoms. Do not bypass safety checks or silence warnings.
-- Prefer integration tests over mocks. Verify behavior, not implementation.
-- Functions should do one thing. Keep them under 100 lines.
-
 ## Research & Content
 
-- Prefer depth over breadth. Use WebSearch for current information. Content fetching handled by dedicated skills.
+- Content fetching handled by dedicated skills (fetch-web, fetch-youtube, fetch-social).
 
 ## Clarification-First Protocol
 
@@ -65,10 +56,4 @@ Detection is handled by hooks (protocol-router). This section defines how to cla
 - State your assumptions explicitly so the user can correct them
 - When ambivalent vs. inarticulate: use open questions for ambivalence, concrete alternatives for articulation difficulty
 - Clarification and planning can merge into one response: "Here's what I think you want [assumptions], here's how I'd approach it [plan]. Correct?"
-
-## Workflow
-
-- Use `gh` for all GitHub operations.
-- Use subagents for research-heavy tasks to protect the main context window.
-- When context gets heavy, compact proactively with explicit preservation instructions.
 

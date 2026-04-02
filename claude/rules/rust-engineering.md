@@ -43,11 +43,9 @@ paths:
 - Use #[inline] only when benchmarks confirm a measurable improvement.
 - For hot paths: avoid allocations, prefer stack-allocated buffers, use SmallVec for small collections.
 
-## Distributed Systems Review Checklist
+## Distributed Systems (Rust-specific)
 
-When reviewing distributed systems code, check:
-- Timeout on every network call. No unbounded waits.
-- Retry with exponential backoff and jitter.
-- Idempotency for all mutating operations.
+Beyond the failure mode checks in `feature-implementation`:
+- Retry with exponential backoff and jitter (not just "is it retried?").
 - Graceful shutdown: handle SIGTERM, drain connections.
 - Circuit breakers on external service calls.

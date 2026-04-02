@@ -7,12 +7,7 @@ paths:
 
 ## Spec-Driven Workflow
 
-Before generating code:
-
-1. Search for existing implementations (Grep/Glob first).
-2. Read relevant source to understand patterns and conventions.
-3. Check official docs for APIs/libraries being used.
-4. Generate following the patterns found, not generic training-data patterns.
+Before generating code, search existing implementations and read relevant source. Generate following the patterns found, not generic training-data patterns.
 
 Before answering about mutable state (files, system, codebase), check with a tool. Never answer from memory about current state.
 

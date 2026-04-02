@@ -175,11 +175,6 @@ if (( ${#ACTIVATED[@]} > 0 )); then
   injection+="\nSUPPRESS:\n${suppress_lines}</protocol-activation>"
 fi
 
-# If only EMOTIONAL activated, don't block tools
-if (( ${#ACTIVATED[@]} == 1 )) && [[ "${ACTIVATED[1]}" == "EMOTIONAL" ]]; then
-  turn_state="clear"
-fi
-
 # --- Phase 4: Write state file ---
 STATE_FILE="$STATE_DIR/${SESSION_ID}.json"
 

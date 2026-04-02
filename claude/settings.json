@@ -65,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r \".tool_input.command\"); if echo \"$CMD\" | grep -qE \"rm\\s+-rf\\s+(/|~|\\.|\\*)|git\\s+push\\s+(-f|--force)\\s+(origin\\s+)?main|git\\s+reset\\s+--hard|DROP\\s+TABLE|chmod\\s+(-R\\s+)?777\\s+/|:(){ :|:& };:\"; then echo \"BLOCKED: Dangerous command detected: $CMD\" >&2; exit 2; fi'",
+            "command": "bash ~/.claude/scripts/dangerous-command-guard.sh",
             "timeout": 5
           }
         ]

@@ -16,6 +16,8 @@ paths:
 
 When building features or fixing bugs. The builder's perspective: "what do I need to do for this to be production-ready?"
 
+Functions should do one thing. Keep them under 100 lines.
+
 ## Test-First Workflow
 
 Default to red/green TDD.
