@@ -1,11 +1,7 @@
 ---
 paths:
   - "**/*.rs"
-  - "**/*.py"
-  - "**/*.ts"
   - "**/*.go"
-  - "**/*.java"
-  - "**/*.kt"
   - "**/Cargo.toml"
   - "**/docker-compose.*"
   - "**/Dockerfile"

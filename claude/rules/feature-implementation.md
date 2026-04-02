@@ -49,15 +49,6 @@ For changes touching network, storage, or async coordination:
 - What happens under **2x expected load**? What **breaks entirely at 100x** (hundreds of req/s)? Connection pool exhaustion, queue backpressure, cascading timeouts, unbounded buffers.
 - Is this endpoint **safe to call twice** with the same input? Retries and at-least-once delivery produce duplicates.
 
-## Observability
-
-Not "are errors logged?" but "how will I know this feature is working correctly in production?"
-
-- **Metrics**: Does this change emit what's needed to understand its behavior? Latency (p50/p95/p99), throughput, error rates, queue depths, resource utilization.
-- **Dashboards**: Can someone unfamiliar with this code tell whether the feature is healthy from a Grafana dashboard? If no dashboard exists, flag it.
-- **Alerts**: What conditions should page someone? Define thresholds: error rate > X% over Y minutes, latency p99 > Z ms, queue depth growing unboundedly.
-- **Deployment validation**: After deploying, what specifically do you check to confirm it works? "Check the logs" is not a plan.
-
 ## State Ownership
 
 When introducing or modifying persistent state:
