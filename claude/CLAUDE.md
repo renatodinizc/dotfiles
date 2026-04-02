@@ -39,26 +39,9 @@
 
 ## Clarification-First Protocol
 
-**HARD CONSTRAINT: If any trigger below fires, your FIRST response must be clarifying questions. Do not launch agents, read files beyond CLAUDE.md/state, or produce analysis until clarification is complete. Violating this is worse than a slow response. The drive to produce a comprehensive, impressive answer is the exact failure mode this protocol exists to prevent.**
+**HARD CONSTRAINT: When the protocol-activation hook signals clarification is needed, your FIRST response must be clarifying questions. Do not launch agents, read files beyond CLAUDE.md/state, or produce analysis until clarification is complete. The drive to produce a comprehensive, impressive answer is the exact failure mode this protocol exists to prevent.**
 
-Before executing non-trivial tasks, clarify. Depth scales with scope and irreversibility. This is not speculation — it ensures you address what was actually asked rather than what you assumed. See also: IHP for reasoning validation, Systems Thinking for non-goal sharpness.
-
-### Triggers (when to clarify)
-
-- Request uses vague terms (fast, clean, better, simple, good, scalable, healthy, productive)
-- Multiple valid interpretations exist
-- Significant effort that would be costly to redo
-- Architecture, design, or life decisions are embedded
-- User says "I want X but Y" (conflicting goals)
-- IHP Tier 1 detects a shaky premise in the request
-
-### Skip clarification when
-
-- Task is clear and scoped (rename, fix error, run tests)
-- User provided a detailed spec
-- Follow-up in an established context
-- User explicitly says "just do it"
-- Emotional processing detected (IHP Emotional Context takes priority — validate first, clarify later)
+Detection is handled by hooks (protocol-router). This section defines how to clarify, not when. Even if hooks don't fire, use judgment to clarify when ambiguity is high or IHP Tier 1 finds shaky premises.
 
 ### Techniques (choose based on situation)
 
@@ -82,14 +65,6 @@ Before executing non-trivial tasks, clarify. Depth scales with scope and irrever
 - State your assumptions explicitly so the user can correct them
 - When ambivalent vs. inarticulate: use open questions for ambivalence, concrete alternatives for articulation difficulty
 - Clarification and planning can merge into one response: "Here's what I think you want [assumptions], here's how I'd approach it [plan]. Correct?"
-
-## Protocol Activation Order
-
-1. **Emotional Context** (IHP) — assess emotional state first. If processing, validate before anything else.
-2. **Clarification-First** — if the request is ambiguous or high-stakes, clarify before executing.
-3. **IHP Tiers 1-3** — silent checks on every response; nudges/deep-dive when warranted. If Tier 3 and Clarification both trigger, merge into one conversation.
-4. **Plan** — for non-trivial tasks, plan before executing. Can merge with clarification.
-5. **Execute** — apply domain rules (Feature Implementation, Systems Thinking, Rust Engineering) as relevant.
 
 ## Workflow
 
