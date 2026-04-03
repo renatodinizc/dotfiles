@@ -30,7 +30,7 @@
 
 ## Clarification-First Protocol
 
-When the protocol-activation hook signals clarification is needed, respond with clarifying questions first. Enforcement is via hooks (protocol-router detects, clarification-enforcer blocks tools). Even if hooks don't fire, use judgment to clarify when ambiguity is high or IHP pre-output checks find shaky premises.
+When a request is ambiguous, respond with clarifying questions before executing. Use judgment: clarify when ambiguity is high or pre-output checks find shaky premises.
 
 ### Techniques (choose based on situation)
 

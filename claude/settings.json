@@ -27,17 +27,6 @@
     "command": "bash ~/.claude/scripts/statusline-command.sh"
   },
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "zsh ~/.claude/scripts/protocol-router.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
@@ -50,16 +39,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Write|Edit|Bash|Agent|TaskCreate|NotebookEdit|Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "zsh ~/.claude/scripts/clarification-enforcer.sh",
-            "timeout": 5
-          }
-        ]
-      },
       {
         "matcher": "Bash",
         "hooks": [
