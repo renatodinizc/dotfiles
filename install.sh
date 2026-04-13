@@ -7,6 +7,14 @@ link() {
   local src="$1"
   local dest="$2"
   mkdir -p "$(dirname "$dest")"
+  # Skip if dest resolves to the same file as src (e.g. parent dir is a symlink back to dotfiles)
+  local real_src real_dest
+  real_src="$(realpath "$src" 2>/dev/null || echo "$src")"
+  real_dest="$(realpath "$dest" 2>/dev/null || echo "")"
+  if [ "$real_src" = "$real_dest" ]; then
+    echo "  Skipping $dest (already resolves to $src)"
+    return
+  fi
   if [ -L "$dest" ]; then
     rm "$dest"
   elif [ -e "$dest" ]; then
