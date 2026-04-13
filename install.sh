@@ -28,34 +28,48 @@ link() {
   echo "  $dest -> $src"
 }
 
-echo "Installing dotfiles..."
+# --- Sections ---
 
-# Claude Code
-for file in $(find "$DOTFILES_DIR/claude" -type f 2>/dev/null); do
-  relative="${file#$DOTFILES_DIR/claude/}"
-  link "$file" "$HOME/.claude/$relative"
-done
+install_claude() {
+  echo "Claude Code..."
+  for file in $(find "$DOTFILES_DIR/claude" -type f 2>/dev/null); do
+    relative="${file#$DOTFILES_DIR/claude/}"
+    link "$file" "$HOME/.claude/$relative"
+  done
 
-# Clean up dead symlinks (from deleted source files)
-find "$HOME/.claude" -type l ! -exec test -e {} \; -print 2>/dev/null | while read -r dead; do
-  rm "$dead"
-  echo "  Removed stale symlink: $dead"
-done
+  # Clean up dead symlinks (from deleted source files)
+  find "$HOME/.claude" -type l ! -exec test -e {} \; -print 2>/dev/null | while read -r dead; do
+    rm "$dead"
+    echo "  Removed stale symlink: $dead"
+  done
+}
 
-# Git
-link "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig"
+install_git() {
+  echo "Git..."
+  link "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig"
+}
 
-# Neovim
-link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+install_nvim() {
+  echo "Neovim..."
+  link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
+}
 
-# VS Code
-link "$DOTFILES_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+install_vscode() {
+  echo "VS Code..."
+  link "$DOTFILES_DIR/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+}
 
-# GitHub CLI
-link "$DOTFILES_DIR/gh/config.yml" "$HOME/.config/gh/config.yml"
+install_gh() {
+  echo "GitHub CLI..."
+  link "$DOTFILES_DIR/gh/config.yml" "$HOME/.config/gh/config.yml"
+}
 
-# macOS keyboard repeat rate (fastest settings, requires logout to take effect)
-if [ "$(uname)" = "Darwin" ]; then
+install_macos() {
+  echo "macOS settings..."
+  if [ "$(uname)" != "Darwin" ]; then
+    yellow "  Skipped (not macOS)"
+    return
+  fi
   defaults write NSGlobalDomain KeyRepeat -int 2
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
   # Trackpad: tap to click, three-finger drag, force click
@@ -65,57 +79,97 @@ if [ "$(uname)" = "Darwin" ]; then
   defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 0
   defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true
   echo "  macOS: keyboard and trackpad settings applied (logout to apply)"
-fi
+}
 
-# iTerm2 color scheme
-ITERM2_THEME="$DOTFILES_DIR/iterm2/Night-Owl.itermcolors"
-ITERM2_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
-if [ -f "$ITERM2_THEME" ] && [ -f "$ITERM2_PLIST" ]; then
-  if pgrep -x iTerm2 > /dev/null 2>&1; then
-    yellow "  iTerm2: SKIPPED - quit iTerm2 first (it overwrites plist changes on exit)"
-  else
-    PBUDDY=/usr/libexec/PlistBuddy
-
-    # Add preset to Custom Color Presets (available in dropdown)
-    "$PBUDDY" -c "Delete ':Custom Color Presets:Night%20Owl'" "$ITERM2_PLIST" 2>/dev/null || true
-    "$PBUDDY" -c "Delete ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null || true
-    "$PBUDDY" -c "Add ':Custom Color Presets:Night Owl' dict" "$ITERM2_PLIST" 2>/dev/null
-    "$PBUDDY" -c "Merge '$ITERM2_THEME' ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null
-
-    # Apply to Default profile: delete existing color keys, then merge fresh
-    while IFS= read -r key; do
-      "$PBUDDY" -c "Delete ':New Bookmarks:0:$key'" "$ITERM2_PLIST" 2>/dev/null || true
-      "$PBUDDY" -c "Delete ':New Bookmarks:0:$key (Dark)'" "$ITERM2_PLIST" 2>/dev/null || true
-    done < <("$PBUDDY" -c "Print" "$ITERM2_THEME" 2>/dev/null | grep " = Dict" | sed 's/ = Dict.*//' | sed 's/^    //')
-    "$PBUDDY" -c "Merge '$ITERM2_THEME' ':New Bookmarks:0'" "$ITERM2_PLIST" 2>/dev/null
-
-    # Disable separate light/dark mode colors so the theme applies in both
-    "$PBUDDY" -c "Set ':New Bookmarks:0:Use Separate Colors for Light and Dark Mode' false" "$ITERM2_PLIST" 2>/dev/null || true
-
-    echo "  iTerm2: Night Owl theme installed and set as default"
-  fi
-else
-  yellow "  iTerm2: skipped ($([ ! -f "$ITERM2_PLIST" ] && echo "iTerm2 not installed" || echo "theme file missing"))"
-fi
-
-# MCP servers (requires API keys in .env)
-if [ -f "$DOTFILES_DIR/.env" ]; then
-  source "$DOTFILES_DIR/.env"
-
-  if command -v claude &> /dev/null; then
-    if [ -n "$TAVILY_API_KEY" ]; then
-      claude mcp add -s user tavily -e TAVILY_API_KEY="$TAVILY_API_KEY" -- npx -y tavily-mcp@latest 2>/dev/null
-      echo "  MCP: tavily configured"
+install_iterm2() {
+  echo "iTerm2..."
+  ITERM2_THEME="$DOTFILES_DIR/iterm2/Night-Owl.itermcolors"
+  ITERM2_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+  if [ -f "$ITERM2_THEME" ] && [ -f "$ITERM2_PLIST" ]; then
+    if pgrep -x iTerm2 > /dev/null 2>&1; then
+      yellow "  iTerm2: SKIPPED - quit iTerm2 first (it overwrites plist changes on exit)"
     else
-      yellow "  MCP: tavily skipped (TAVILY_API_KEY not set in .env)"
-    fi
+      PBUDDY=/usr/libexec/PlistBuddy
 
+      # Add preset to Custom Color Presets (available in dropdown)
+      "$PBUDDY" -c "Delete ':Custom Color Presets:Night%20Owl'" "$ITERM2_PLIST" 2>/dev/null || true
+      "$PBUDDY" -c "Delete ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null || true
+      "$PBUDDY" -c "Add ':Custom Color Presets:Night Owl' dict" "$ITERM2_PLIST" 2>/dev/null
+      "$PBUDDY" -c "Merge '$ITERM2_THEME' ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null
+
+      # Apply to Default profile: delete existing color keys, then merge fresh
+      while IFS= read -r key; do
+        "$PBUDDY" -c "Delete ':New Bookmarks:0:$key'" "$ITERM2_PLIST" 2>/dev/null || true
+        "$PBUDDY" -c "Delete ':New Bookmarks:0:$key (Dark)'" "$ITERM2_PLIST" 2>/dev/null || true
+      done < <("$PBUDDY" -c "Print" "$ITERM2_THEME" 2>/dev/null | grep " = Dict" | sed 's/ = Dict.*//' | sed 's/^    //')
+      "$PBUDDY" -c "Merge '$ITERM2_THEME' ':New Bookmarks:0'" "$ITERM2_PLIST" 2>/dev/null
+
+      # Disable separate light/dark mode colors so the theme applies in both
+      "$PBUDDY" -c "Set ':New Bookmarks:0:Use Separate Colors for Light and Dark Mode' false" "$ITERM2_PLIST" 2>/dev/null || true
+
+      echo "  iTerm2: Night Owl theme installed and set as default"
+    fi
   else
-    red "  MCP: claude CLI not found, skipping MCP server setup"
+    yellow "  iTerm2: skipped ($([ ! -f "$ITERM2_PLIST" ] && echo "iTerm2 not installed" || echo "theme file missing"))"
   fi
-else
-  yellow "  MCP: no .env file found, skipping MCP server setup (see .env.example)"
+}
+
+install_mcp() {
+  echo "MCP servers..."
+  if [ -f "$DOTFILES_DIR/.env" ]; then
+    source "$DOTFILES_DIR/.env"
+
+    if command -v claude &> /dev/null; then
+      if [ -n "$TAVILY_API_KEY" ]; then
+        claude mcp add -s user tavily -e TAVILY_API_KEY="$TAVILY_API_KEY" -- npx -y tavily-mcp@latest 2>/dev/null
+        echo "  MCP: tavily configured"
+      else
+        yellow "  MCP: tavily skipped (TAVILY_API_KEY not set in .env)"
+      fi
+
+    else
+      red "  MCP: claude CLI not found, skipping MCP server setup"
+    fi
+  else
+    yellow "  MCP: no .env file found, skipping MCP server setup (see .env.example)"
+  fi
+}
+
+# --- Main ---
+
+ALL_SECTIONS="claude git nvim vscode gh macos iterm2 mcp"
+
+usage() {
+  echo "Usage: $0 [--section ...]"
+  echo ""
+  echo "Sections: $ALL_SECTIONS"
+  echo "No flags installs everything."
+}
+
+sections=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --help|-h) usage; exit 0 ;;
+    --*) sections+=("${1#--}") ;;
+    *) echo "Unknown argument: $1"; usage; exit 1 ;;
+  esac
+  shift
+done
+
+if [ ${#sections[@]} -eq 0 ]; then
+  sections=($ALL_SECTIONS)
 fi
+
+echo "Installing dotfiles..."
+for section in "${sections[@]}"; do
+  if declare -f "install_$section" > /dev/null; then
+    "install_$section"
+  else
+    red "Unknown section: $section"
+    usage
+    exit 1
+  fi
+done
 
 echo ""
 echo "Recommended: add to your shell profile (~/.zshrc):"
