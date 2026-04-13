@@ -1,6 +1,4 @@
 {
-  "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
   "permissions": {
     "deny": [
       "Read(./.env)",
@@ -8,24 +6,6 @@
       "Read(./secrets/**)",
       "Read(./**/credentials*)"
     ]
-  },
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest",
-        "--user-data-dir",
-        "/Users/renato/.playwright-profile"
-      ]
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
-    }
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/scripts/statusline-command.sh"
   },
   "hooks": {
     "SessionStart": [
@@ -85,5 +65,28 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/scripts/statusline-command.sh"
+  },
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--user-data-dir",
+        "/Users/renato/.playwright-profile"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    }
   }
 }
