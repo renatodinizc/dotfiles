@@ -3,6 +3,9 @@ set -e
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+red()    { printf '\033[0;31m%s\033[0m\n' "$*"; }
+yellow() { printf '\033[0;33m%s\033[0m\n' "$*"; }
+
 link() {
   local src="$1"
   local dest="$2"
@@ -55,30 +58,44 @@ link "$DOTFILES_DIR/gh/config.yml" "$HOME/.config/gh/config.yml"
 if [ "$(uname)" = "Darwin" ]; then
   defaults write NSGlobalDomain KeyRepeat -int 2
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
-  echo "  macOS: keyboard repeat rate set (logout to apply)"
+  # Trackpad: tap to click, three-finger drag, force click
+  defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+  defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+  defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+  defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 0
+  defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool true
+  echo "  macOS: keyboard and trackpad settings applied (logout to apply)"
 fi
 
 # iTerm2 color scheme
 ITERM2_THEME="$DOTFILES_DIR/iterm2/Night-Owl.itermcolors"
 ITERM2_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
 if [ -f "$ITERM2_THEME" ] && [ -f "$ITERM2_PLIST" ]; then
-  PBUDDY=/usr/libexec/PlistBuddy
+  if pgrep -x iTerm2 > /dev/null 2>&1; then
+    yellow "  iTerm2: SKIPPED - quit iTerm2 first (it overwrites plist changes on exit)"
+  else
+    PBUDDY=/usr/libexec/PlistBuddy
 
-  # Add preset to Custom Color Presets (available in dropdown)
-  "$PBUDDY" -c "Delete ':Custom Color Presets:Night%20Owl'" "$ITERM2_PLIST" 2>/dev/null || true
-  "$PBUDDY" -c "Delete ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null || true
-  "$PBUDDY" -c "Add ':Custom Color Presets:Night Owl' dict" "$ITERM2_PLIST" 2>/dev/null
-  "$PBUDDY" -c "Merge '$ITERM2_THEME' ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null
+    # Add preset to Custom Color Presets (available in dropdown)
+    "$PBUDDY" -c "Delete ':Custom Color Presets:Night%20Owl'" "$ITERM2_PLIST" 2>/dev/null || true
+    "$PBUDDY" -c "Delete ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null || true
+    "$PBUDDY" -c "Add ':Custom Color Presets:Night Owl' dict" "$ITERM2_PLIST" 2>/dev/null
+    "$PBUDDY" -c "Merge '$ITERM2_THEME' ':Custom Color Presets:Night Owl'" "$ITERM2_PLIST" 2>/dev/null
 
-  # Apply to Default profile: delete existing color keys, then merge fresh
-  while IFS= read -r key; do
-    "$PBUDDY" -c "Delete ':New Bookmarks:0:$key'" "$ITERM2_PLIST" 2>/dev/null || true
-  done < <("$PBUDDY" -c "Print" "$ITERM2_THEME" 2>/dev/null | grep " = Dict" | sed 's/ = Dict.*//' | sed 's/^    //')
-  "$PBUDDY" -c "Merge '$ITERM2_THEME' ':New Bookmarks:0'" "$ITERM2_PLIST" 2>/dev/null
+    # Apply to Default profile: delete existing color keys, then merge fresh
+    while IFS= read -r key; do
+      "$PBUDDY" -c "Delete ':New Bookmarks:0:$key'" "$ITERM2_PLIST" 2>/dev/null || true
+      "$PBUDDY" -c "Delete ':New Bookmarks:0:$key (Dark)'" "$ITERM2_PLIST" 2>/dev/null || true
+    done < <("$PBUDDY" -c "Print" "$ITERM2_THEME" 2>/dev/null | grep " = Dict" | sed 's/ = Dict.*//' | sed 's/^    //')
+    "$PBUDDY" -c "Merge '$ITERM2_THEME' ':New Bookmarks:0'" "$ITERM2_PLIST" 2>/dev/null
 
-  echo "  iTerm2: Night Owl theme installed and set as default"
+    # Disable separate light/dark mode colors so the theme applies in both
+    "$PBUDDY" -c "Set ':New Bookmarks:0:Use Separate Colors for Light and Dark Mode' false" "$ITERM2_PLIST" 2>/dev/null || true
+
+    echo "  iTerm2: Night Owl theme installed and set as default"
+  fi
 else
-  echo "  iTerm2: skipped ($([ ! -f "$ITERM2_PLIST" ] && echo "iTerm2 not installed" || echo "theme file missing"))"
+  yellow "  iTerm2: skipped ($([ ! -f "$ITERM2_PLIST" ] && echo "iTerm2 not installed" || echo "theme file missing"))"
 fi
 
 # MCP servers (requires API keys in .env)
@@ -90,14 +107,14 @@ if [ -f "$DOTFILES_DIR/.env" ]; then
       claude mcp add -s user tavily -e TAVILY_API_KEY="$TAVILY_API_KEY" -- npx -y tavily-mcp@latest 2>/dev/null
       echo "  MCP: tavily configured"
     else
-      echo "  MCP: tavily skipped (TAVILY_API_KEY not set in .env)"
+      yellow "  MCP: tavily skipped (TAVILY_API_KEY not set in .env)"
     fi
 
   else
-    echo "  MCP: claude CLI not found, skipping MCP server setup"
+    red "  MCP: claude CLI not found, skipping MCP server setup"
   fi
 else
-  echo "  MCP: no .env file found, skipping MCP server setup (see .env.example)"
+  yellow "  MCP: no .env file found, skipping MCP server setup (see .env.example)"
 fi
 
 echo ""
