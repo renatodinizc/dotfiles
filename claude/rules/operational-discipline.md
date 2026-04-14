@@ -26,6 +26,8 @@ Before answering about mutable state (files, system, codebase), check with a too
 | **COMPRESSED** (summarized) | Completed exploration, resolved discussions, background research | "Explored 3 auth approaches, chose JWT because..." |
 | **STUB** (one-line reference) | Files read for context, successful tool outputs, dead ends | "Read src/auth.rs (450 lines, token validation logic)" |
 
+**Core rule if table is unavailable:** keep only what would cause a wrong action if lost; stub everything else.
+
 Default to STUB. Promote to COMPRESSED only if the detail would change a future decision. Promote to FULL only if losing it would cause a wrong action.
 
 ### Post-Compaction Recovery

@@ -16,6 +16,13 @@
 - Replace, don't deprecate: when a new approach supersedes an old one, say so clearly and remove the old one.
 - When I describe a plan, identify the riskiest assumption first.
 
+## Rule Interactions
+
+When rules pull in different directions:
+- **Verify before asking.** If a premise is uncertain but a tool can check it, check first. Clarification-First applies when tools cannot resolve the ambiguity (user intent, scope, priorities).
+- **Code scope vs. approach scope.** "No speculative additions" governs code output (don't add features or refactors beyond scope). "Challenge your own framing" and IHP nudges govern analytical output (do surface alternative approaches and risks).
+- **Scale process to task.** Full protocols (TDD, blast radius, clarification rounds) are for production changes. For trivial tasks, apply the principle, not the ceremony. Name what you're skipping.
+
 ## Reliability & Verification
 
 - Say "I don't know" when you don't know. This is preferred over guessing.
